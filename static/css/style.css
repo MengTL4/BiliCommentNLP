@@ -1,0 +1,156 @@
+/* 全局样式 */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+    border: none;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 0.25rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #0091c2;
+    border-color: #0091c2;
+}
+
+.bg-primary {
+    background-color: #00a1d6 !important;
+}
+
+.text-primary {
+    color: #00a1d6 !important;
+}
+
+/* 评论表格样式 */
+.table th {
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* 情感标签样式 */
+.sentiment-tag {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+.sentiment-positive {
+    color: #fff;
+    background-color: #28a745;
+}
+
+.sentiment-negative {
+    color: #fff;
+    background-color: #dc3545;
+}
+
+.sentiment-neutral {
+    color: #fff;
+    background-color: #6c757d;
+}
+
+/* 进度条 */
+.progress {
+    height: 0.75rem;
+    border-radius: 1rem;
+}
+
+.progress-bar {
+    background-color: #00a1d6;
+}
+
+/* 统计卡片 */
+#statisticsContainer .card {
+    transition: transform 0.2s;
+}
+
+#statisticsContainer .card:hover {
+    transform: translateY(-5px);
+}
+
+/* 页码导航 */
+.pagination .page-link {
+    color: #00a1d6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #00a1d6;
+    border-color: #00a1d6;
+}
+
+/* 表格样式 */
+.table th, .table td {
+    vertical-align: middle;
+}
+
+/* 用户名和IP属地列样式 */
+.table td:first-child {
+    font-weight: 500;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table td:nth-child(2) {
+    font-size: 0.85em;
+    color: #6c757d;
+}
+
+/* 筛选区域样式 */
+#locationFilter, #sentimentFilter, #confidenceFilter {
+    cursor: pointer;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    font-weight: 500;
+}
+
+/* 表格响应式处理 */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table th, .table td {
+        min-width: 100px;
+    }
+    
+    .table td:nth-child(3) {
+        min-width: 200px;
+    }
+} 

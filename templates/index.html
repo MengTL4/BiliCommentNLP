@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>哔哩哔哩评论分析系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-chat-square-text-fill me-2"></i>
+                哔哩哔哩评论分析系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">评论分析</a>
+                    </li>
+<!--                    <li class="nav-item">-->
+<!--                        <a class="nav-link" href="/bili2text">B站视频转文本</a>-->
+<!--                    </li>-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/video_to_text">视频转文本</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-search me-2"></i>视频查询
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="searchForm">
+                            <div class="mb-3">
+                                <label for="bvInput" class="form-label">输入BV号:</label>
+                                <input type="text" class="form-control" id="bvInput" placeholder="例如: BV1BfGqzDE59" required>
+                                <div class="form-text">输入视频的BV号进行评论分析</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="analyzeBtn">
+                                <i class="bi bi-play-fill me-2"></i>开始分析
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-info-circle-fill me-2"></i>处理状态
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3" id="statusBox">
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-hourglass me-2"></i>等待任务...
+                            </div>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="text-center" id="progressText">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pie-chart-fill me-2"></i>情感分析统计
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-text">视频BV号</span>
+                                    <input type="text" class="form-control" id="statBvFilter" placeholder="输入BV号查看对应视频的情感统计">
+                                    <button class="btn btn-primary" type="button" id="applyStatBvFilter">应用筛选</button>
+                                    <button class="btn btn-outline-secondary" type="button" id="resetStatBvFilter">重置</button>
+                                </div>
+                                <div class="form-text" id="statBvFilterInfo">显示所有评论的情感统计</div>
+                            </div>
+                        </div>
+                        <div class="row text-center" id="statisticsContainer">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-light">
+                                    <div class="card-body d-flex flex-column justify-content-center">
+                                        <h5 class="card-title text-primary">总评论数</h5>
+                                        <h2 class="card-text" id="totalComments">-</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-light">
+                                    <div class="card-body d-flex flex-column justify-content-center">
+                                        <h5 class="card-title text-success">正向评论</h5>
+                                        <h2 class="card-text" id="positiveComments">-</h2>
+                                        <span id="positivePercentage" class="text-muted">-%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-light">
+                                    <div class="card-body d-flex flex-column justify-content-center">
+                                        <h5 class="card-title text-danger">负向评论</h5>
+                                        <h2 class="card-text" id="negativeComments">-</h2>
+                                        <span id="negativePercentage" class="text-muted">-%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <canvas id="sentimentChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-chat-dots-fill me-2"></i>评论数据
+                        </h5>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-light" id="showMainComments">主评论</button>
+                            <button class="btn btn-sm btn-outline-light" id="showSubComments">子评论</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">IP属地</span>
+                                    <select class="form-select" id="locationFilter">
+                                        <option value="all">全部地区</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">情感倾向</span>
+                                    <select class="form-select" id="sentimentFilter">
+                                        <option value="all">全部</option>
+                                        <option value="正向">正向</option>
+                                        <option value="负向">负向</option>
+                                        <option value="未提及">未提及</option>
+                                    </select>
+                                    <span class="input-group-text">置信度</span>
+                                    <select class="form-select" id="confidenceFilter">
+                                        <option value="all">全部</option>
+                                        <option value="0.8">≥ 80%</option>
+                                        <option value="0.6">≥ 60%</option>
+                                        <option value="0.4">≥ 40%</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-text">视频BV号</span>
+                                    <input type="text" class="form-control" id="bvFilter" placeholder="输入BV号筛选对应视频的评论">
+                                    <button class="btn btn-primary" type="button" id="applyBvFilter">应用筛选</button>
+                                    <button class="btn btn-outline-secondary" type="button" id="resetBvFilter">重置</button>
+                                </div>
+                                <div class="form-text" id="bvFilterInfo">显示所有评论数据</div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>用户名称</th>
+                                        <th>IP属地</th>
+                                        <th>评论内容</th>
+                                        <th>情感倾向</th>
+                                        <th>置信度</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="commentsTable">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-3">
+                                            尚无评论数据
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav aria-label="评论分页" class="d-flex justify-content-center mt-3">
+                            <ul class="pagination" id="commentsPagination">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">上一页</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">下一页</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    <footer class="bg-light text-center text-muted py-3 mt-5">-->
+<!--        <div class="container">-->
+<!--            &copy; 2023 哔哩哔哩评论分析系统-->
+<!--        </div>-->
+<!--    </footer>-->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

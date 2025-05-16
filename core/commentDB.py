@@ -8,6 +8,11 @@ class MongoDBMix:
 
     def insert_main_comments(self, rpids_main):
         try:
+            # 检查列表是否为空
+            if not rpids_main:
+                print("主评论列表为空，跳过插入")
+                return
+                
             result = self.db['main_comments'].insert_many(rpids_main)
             print(f"成功插入 {len(result.inserted_ids)} 条主评论")
         except Exception as e:
@@ -15,6 +20,11 @@ class MongoDBMix:
 
     def insert_sub_comments(self, rpids_sub):
         try:
+            # 检查列表是否为空
+            if not rpids_sub:
+                print("子评论列表为空，跳过插入")
+                return
+                
             result = self.db['sub_comments'].insert_many(rpids_sub)
             print(f"成功插入 {len(result.inserted_ids)} 条子评论")
         except Exception as e:

@@ -7,7 +7,7 @@ class PaginationOffsetData:
 
 
 class PaginationOffset:
-    def __init__(self, type: int, direction: int, pn: int, session_id: str = ""):
+    def __init__(self, type: int, direction: int, pn: int):
         self.type = type
         self.direction = direction
         self.data = PaginationOffsetData(pn)

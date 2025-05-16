@@ -73,6 +73,6 @@ if __name__ == "__main__":
         'web_location': '1315875',
         'pagination_str': encode_pagination_offset()
     }
-
+    print(params)
     signed_query = WbiEncryption.get_signed_query(params)
     print("Signed Query:", signed_query)

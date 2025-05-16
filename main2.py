@@ -3,8 +3,11 @@ import random
 import time
 from pprint import pprint
 
+from pymongo import MongoClient
+
 from biliUtils.bvConverter import BvConverter
 from biliUtils.comment import Comment
+from core.map_generator import generate_comment_map
 from core.parseReply import parse_comment_response
 from core.process import ProcessHandle
 
@@ -17,26 +20,25 @@ from core.process import ProcessHandle
 
 if __name__ == '__main__':
     # 实例化
-    comment = Comment()
-    bvConverter = BvConverter()
-
-    # bv转av
-    bv = "BV1HLVFzJENH"
-    oid = bvConverter.bv2av(bv)
-    print(oid)
-
-    # 获取评论数量
-    count = comment.replyCount(oid)['data']['count']
-    print(count)
-
-    # for i in range(1, 9999):
-    # 主评论
+    # comment = Comment()
+    # bvConverter = BvConverter()
+    #
+    # # bv转av
+    # bv = "BV1HLVFzJENH"
+    # oid = bvConverter.bv2av(bv)
+    # print(oid)
+    #
+    # # 获取评论数量
+    # count = comment.replyCount(oid)['data']['count']
+    # print(count)
+    #
+    # # for i in range(1, 9999):
+    # # 主评论
     # responses = comment.replyResponse(oid, 1)
-    # if responses['data']['cursor']['is_end'] is False:
-    #     print(responses)
-    #     comments = parse_comment_response(responses)
-    #     print(json.dumps(comments, ensure_ascii=False, indent=2))
-    pprint(comment.videoList(6639802, 1)['data']['list']['vlist'])
+    # print(responses)
+    # comments = parse_comment_response(responses)
+    # print(json.dumps(comments, ensure_ascii=False, indent=2))
+    # pprint(comment.videoList(6639802, 1)['data']['list']['vlist'])
     # processHandle = ProcessHandle()
     # processHandle.fetch_video_list(6639802)
     #
@@ -73,3 +75,18 @@ if __name__ == '__main__':
     #         print(f"子评论获取获取将等待 {delay} 秒")
     #         time.sleep(delay)
     #         print("子评论获取等待结束")
+
+    # 连接本地MongoDB服务（无用户名密码）
+    client = MongoClient('mongodb://localhost:27017/')
+
+    # 选择数据库和集合
+    # 假设你的数据库名为bilibili，集合名为comments，根据你的实际情况修改
+    db = client['bilibili']
+    collection = db['main_comments']
+
+    # 生成评论地图
+    output_dir = "output"
+    html_path = generate_comment_map(collection, output_dir)
+
+    print(f"地图已生成在: {html_path}")
+

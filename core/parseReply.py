@@ -38,6 +38,8 @@ def extract_comments(comment, replies):
         # 如果有嵌套的子评论，递归提取
         if "replies" in content and content["replies"]:
             extract_comments(comment, content["replies"])
+
+
 def parse_comment_item(item):
     """解析单条评论"""
     member = item.get('member', {})
@@ -64,16 +66,54 @@ def parse_comment_item(item):
 
 def parse_comment_response(json_data):
     """解析评论响应"""
-    data = json_data.get('data', {})
-    comments = []
-    # 解析主评论
-    for item in data.get('replies', []):
-        comments.append(parse_comment_item(item))
-    # 解析置顶评论
-    for item in data.get('top_replies', []):
-        comments.append(parse_comment_item(item))
-    return comments
+    try:
+        # 检查json_data是否有效
+        if not json_data:
+            print("评论数据为空")
+            return []
 
+        data = json_data.get('data', {})
+        if not data:
+            print("评论数据不包含data字段")
+            return []
+
+        comments = []
+
+        # 解析主评论
+        replies = data.get('replies', [])
+        if replies:
+            for item in replies:
+                try:
+                    comments.append(parse_comment_item(item))
+                except Exception as e:
+                    print(f"解析主评论出错: {e}, 评论内容: {item}")
+        else:
+            print("无主评论")
+
+        # 解析置顶评论
+        top_replies = data.get('top_replies', [])
+        if top_replies:
+            for item in top_replies:
+                try:
+                    comments.append(parse_comment_item(item))
+                except Exception as e:
+                    print(f"解析置顶评论出错: {e}, 评论内容: {item}")
+
+        return comments
+    except Exception as e:
+        print(f"评论解析过程发生错误: {e}")
+        return []
+# def parse_comment_response(json_data):
+#     """解析评论响应"""
+#     data = json_data.get('data', {})
+#     comments = []
+#     # 解析主评论
+#     for item in data.get('replies', []):
+#         comments.append(parse_comment_item(item))
+#     # 解析置顶评论
+#     for item in data.get('top_replies', []):
+#         comments.append(parse_comment_item(item))
+#     return comments
 # 假设已经获取到了评论的 JSON 数据
 # with open('comment.json', 'r', encoding='utf-8') as f:
 #     json_data = json.load(f)
